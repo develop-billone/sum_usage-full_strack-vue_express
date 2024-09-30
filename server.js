@@ -18,7 +18,14 @@ app.use(express.json());
 app.post("/oracle", async (req, res) => {
   const { start_date, end_date, number } = req.body;
   const date = new Date();
-  const name = `Usage_${date.getFullYear()}${date.getMonth()}${date.getDate()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
+  const dateFormatted =
+    date.getFullYear().toString() +
+    (date.getMonth() + 1).toString().padStart(2, "0") +
+    date.getDate().toString().padStart(2, "0") +
+    date.getHours().toString().padStart(2, "0") +
+    date.getMinutes().toString().padStart(2, "0") +
+    date.getSeconds().toString().padStart(2, "0");
+  const name = `Usage_${start_date}-${end_date}`;
 
   try {
     if (!Array.isArray(number)) {
@@ -73,6 +80,26 @@ app.get("/oracle/list", (req, res) => {
   }));
   res.json(jobList);
 });
+
+app.delete("/oracle/:jobId", (req, res) => {
+  if (jobs.has(req.params.jobId)) {
+    jobs.delete(req.params.jobId);
+    res.json({ status: "deleted" });
+  } else {
+    res.status(404).json({ error: "Job not found" });
+  }
+});
+
+app.get("/oracle/:id"),
+  (req, res) => {
+    const job = jobs.get(req.params.jobId);
+    console.log("Job added to queue:", job);
+    if (job) {
+      res.json({ status: "successfully" });
+    } else {
+      res.status(404).json({ error: "Job not found" });
+    }
+  };
 
 app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);

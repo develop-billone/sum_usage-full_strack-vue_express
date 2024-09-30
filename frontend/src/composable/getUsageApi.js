@@ -4,11 +4,12 @@ import { ref } from "vue";
 axios.defaults.baseURL = "http://localhost:3000";
 
 export default function getUsageApi() {
-  const usage = ref([]);
+  const usages = ref([]);
+  const usage = ref(null);
   const usageList = ref([]);
   const error = ref(null);
 
-  const getUsage = async (data) => {
+  const getUsages = async (data) => {
     try {
       const res = await axios({
         method: "POST",
@@ -33,5 +34,33 @@ export default function getUsageApi() {
       error.value = err.message;
     }
   };
-  return { usage, error, getUsage, getUsageList, usageList };
+
+  const deleteUsage = async (id) => {
+    try {
+      const res = await axios.delete(`/oracle/${id}`);
+      return res;
+    } catch (err) {
+      error.value = err.message;
+    }
+  };
+
+  const getUsage = async (id) => {
+    try {
+      const res = await axios.get(`/oracle/status/${id}`);
+      usage.value = res;
+    } catch (err) {
+      error.value = err.message;
+    }
+  };
+
+  return {
+    usages,
+    error,
+    getUsages,
+    getUsageList,
+    usageList,
+    deleteUsage,
+    getUsage,
+    usage,
+  };
 }
