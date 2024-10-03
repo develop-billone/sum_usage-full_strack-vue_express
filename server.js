@@ -3,7 +3,7 @@ import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import PQueue from "p-queue";
-import runOracleQuery from "./models/sumActual.js";
+import runOracleQuery from "./controllers/sumActual.js";
 import { fileURLToPath } from 'url';
 
 const JOB_EXPIRATION_TIME = 7200000; // 3 hour
