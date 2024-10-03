@@ -4,14 +4,18 @@ import cors from "cors";
 import dotenv from "dotenv";
 import PQueue from "p-queue";
 import runOracleQuery from "./models/sumActual.js";
+import { fileURLToPath } from 'url';
 
 const JOB_EXPIRATION_TIME = 7200000; // 3 hour
 
 dotenv.config();
 const app = express();
-const port = process.env.SERVER_PORT;
+const port = process.env.SERVER_PORT || 5000;
 const queue = new PQueue({ concurrency: 3 });
 const jobs = new Map(); // Store job states and results
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(cors());
 app.use(express.json());
@@ -102,7 +106,7 @@ app.get("/oracle/:id"),
       res.status(404).json({ error: "Job not found" });
     }
   };
-  
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "client/dist", "index.html"));
 });
