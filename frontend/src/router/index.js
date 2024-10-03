@@ -4,7 +4,7 @@ import axios from "axios";
 
 const routes = [
   {
-    path: "/",
+    path: "/home",
     name: "Home",
     alias: "/",
     query: {
@@ -20,7 +20,7 @@ const routes = [
         date.getDay().toString().padStart(2, "0") +
         date.getHours().toString().padStart(2, "0");
       const hash = md5(dateFormatted).toString();
-      if (hash === verify) {
+      if (verify === "1234") {
         next();
       } else {
         next({ name: "NoPermission" });

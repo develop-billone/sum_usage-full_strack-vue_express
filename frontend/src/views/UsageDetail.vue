@@ -22,9 +22,9 @@
           <v-card-title>
             <div class="flex justify-between">
               <h1>Detail</h1>
-              <button
+              <v-btn
                 name="download"
-                class="w-20 border rounded-md shadow-md flex justify-center p-2 hover:bg-green-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
+                class="w-20"
                 @click="handleDownload"
               >
                 <svg
@@ -39,7 +39,7 @@
                     d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"
                   ></path>
                 </svg>
-              </button>
+              </v-btn>
             </div>
           </v-card-title>
           <v-card-text>

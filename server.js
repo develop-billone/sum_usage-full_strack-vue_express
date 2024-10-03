@@ -4,12 +4,13 @@ import dotenv from "dotenv";
 import PQueue from "p-queue";
 import runOracleQuery from "./models/sumActual.js";
 
-const JOB_EXPIRATION_TIME = 18000000; // 5 hour
+const JOB_EXPIRATION_TIME = 7200000; // 3 hour
+
 
 dotenv.config();
 const app = express();
 const port = process.env.SERVER_PORT;
-const queue = new PQueue({ concurrency: 1 });
+const queue = new PQueue({ concurrency: 3 });
 const jobs = new Map(); // Store job states and results
 
 app.use(cors());
@@ -17,14 +18,6 @@ app.use(express.json());
 
 app.post("/oracle", async (req, res) => {
   const { start_date, end_date, number } = req.body;
-  const date = new Date();
-  const dateFormatted =
-    date.getFullYear().toString() +
-    (date.getMonth() + 1).toString().padStart(2, "0") +
-    date.getDate().toString().padStart(2, "0") +
-    date.getHours().toString().padStart(2, "0") +
-    date.getMinutes().toString().padStart(2, "0") +
-    date.getSeconds().toString().padStart(2, "0");
   const name = `Usage_${start_date}-${end_date}`;
 
   try {
@@ -82,9 +75,14 @@ app.get("/oracle/list", (req, res) => {
 });
 
 app.delete("/oracle/:jobId", (req, res) => {
-  if (jobs.has(req.params.jobId)) {
-    jobs.delete(req.params.jobId);
-    res.json({ status: "deleted" });
+  const job = jobs.get(req.params.jobId);
+  if (job) {
+    if (job.status === "processing") {
+      res.json({ status: "failed", message: "Cannot delete a job that is currently processing" });
+    } else {
+      jobs.delete(req.params.jobId);
+      res.json({ status: "success", message: "Job deleted successfully" });
+    }
   } else {
     res.status(404).json({ error: "Job not found" });
   }

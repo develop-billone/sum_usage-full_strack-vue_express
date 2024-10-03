@@ -40,10 +40,24 @@
                 />
               </div>
             </div>
-            <div class="mt-7">
-              <v-btn @click="handleSubmit" class="w-full">Submit</v-btn>
+            <div
+              v-if="number.length > 0"
+              class="flex flex-wrap mt-5 border rounded-md overflow-y-auto max-h-40 gap-x-5 gap-y-10 p-5"
+            >
+              <div v-for="item in number">{{ item }}</div>
             </div>
+
+            <!-- <div class="flex">
+              <v-btn @click="handleSubmit" class="">Submit</v-btn>
+              <v-btn @click="handleSubmit" class="w-20">clear</v-btn>
+            </div> -->
           </v-card-text>
+          <template v-slot:actions>
+            <v-btn @click="handleSubmit" class="flex-grow-1" variant="outlined"
+              >Submit</v-btn
+            >
+            <v-btn @click="handleClear" class="w-32">clear</v-btn>
+          </template>
         </v-card>
 
         <v-card>
@@ -94,11 +108,11 @@
                   <td @click="pathToDetail(item.jobId)">{{ item.status }}</td>
                   <td class="flex items-center justify-center">
                     <div class="space-x-3 flex items-center">
-                      <button
+                      <v-btn
                         name="download"
-                        class="w-20 border rounded-md shadow-md flex justify-center p-2 hover:bg-green-400 disabled:bg-gray-200 disabled:cursor-not-allowed"
                         @click="handleDownload(item.jobId)"
                         :disabled="item.status !== 'completed'"
+                        class="w-20"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -112,7 +126,7 @@
                             d="M20 18H4v-7H2v7c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2v-7h-2v7z"
                           ></path>
                         </svg>
-                      </button>
+                      </v-btn>
                       <button @click="handleDelete(item.jobId)">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -140,7 +154,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { h, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import getUsageApi from "../composable/getUsageApi";
 import Export from "../scripts/export";
@@ -213,16 +227,24 @@ const handleSubmit = async () => {
   } catch (err) {
     console.error(err);
     error.value = err.message || "An error occurred";
+  } finally {
+    number.value = [];
+    start_date.value = "";
+    end_date.value = "";
   }
 };
 
 const handleDelete = async (id) => {
   confirm(`Are you sure you want to delete this usage(${id})?`) || null;
   try {
-    await deleteUsage(id);
+    const res = await deleteUsage(id);
     await getUsageList();
     usageList.value.sort((a, b) => b.jobId.localeCompare(a.jobId));
-    toast.success("Usage deleted successfully");
+    if (res.data.status === "success") {
+      toast.success(res.data.message);
+    } else {
+      toast.error(res.data.message);
+    }
   } catch (err) {
     console.error(err);
     error.value = err.message || "An error occurred";
@@ -247,5 +269,11 @@ const handleDownload = async (id) => {
     console.error(err);
     error.value = err.message || "An error occurred";
   }
+};
+
+const handleClear = () => {
+  start_date.value = "";
+  end_date.value = "";
+  number.value = [];
 };
 </script>
