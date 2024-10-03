@@ -43,7 +43,7 @@
             </div>
           </v-card-title>
           <v-card-text>
-            <v-table>
+            <v-table fixed-header height="540px">
               <thead>
                 <tr>
                   <th>MSISDN</th>

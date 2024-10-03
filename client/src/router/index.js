@@ -20,7 +20,7 @@ const routes = [
         date.getDay().toString().padStart(2, "0") +
         date.getHours().toString().padStart(2, "0");
       const hash = md5(dateFormatted).toString();
-      if (verify === "1234") {
+      if (verify === hash) {
         next();
       } else {
         next({ name: "NoPermission" });

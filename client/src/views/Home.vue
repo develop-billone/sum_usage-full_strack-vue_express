@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="12" class="space-y-3">
+      <v-col cols="12" class="space-y-7">
         <v-card>
           <v-card-text>
             <div class="grid lg:flex">
@@ -12,7 +12,7 @@
                     type="date"
                     v-model="start_date"
                     id="start_date"
-                    class="border rounded-md p-3"
+                    class="border rounded-md p-3 min-w-52"
                   />
                 </div>
                 <div class="grid w-full">
@@ -21,7 +21,7 @@
                     type="date"
                     v-model="end_date"
                     id="end_date"
-                    class="border rounded-md p-3"
+                    class="border rounded-md p-3 min-w-52"
                   />
                 </div>
               </div>
@@ -40,17 +40,17 @@
                 />
               </div>
             </div>
+            <div class="mt-5">
+              <p>
+                Result: <span>{{ number.length }}</span> items
+              </p>
+            </div>
             <div
               v-if="number.length > 0"
-              class="flex flex-wrap mt-5 border rounded-md overflow-y-auto max-h-40 gap-x-5 gap-y-10 p-5"
+              class="flex flex-wrap mt-2 border rounded-md overflow-y-auto max-h-40 gap-x-4 gap-y-6 p-5"
             >
               <div v-for="item in number">{{ item }}</div>
             </div>
-
-            <!-- <div class="flex">
-              <v-btn @click="handleSubmit" class="">Submit</v-btn>
-              <v-btn @click="handleSubmit" class="w-20">clear</v-btn>
-            </div> -->
           </v-card-text>
           <template v-slot:actions>
             <v-btn @click="handleSubmit" class="flex-grow-1" variant="outlined"
@@ -197,7 +197,12 @@ const handleFileUpload = (event) => {
 
     reader.onload = (e) => {
       const text = e.target.result;
-      const numbers = text.split("\n").map((line) => line.trim());
+      const numbers = text.split("\n\t").map((line) => line.trim());
+      numbers.forEach((item, index) => {
+        if (item === "") {
+          numbers.splice(index, 1);
+        }
+      });
       if (numbers.length > 1000) {
         toast.error("File limit exceeded");
         return (error.value = "File limit exceeded");
@@ -275,5 +280,6 @@ const handleClear = () => {
   start_date.value = "";
   end_date.value = "";
   number.value = [];
+  location.reload();
 };
 </script>
