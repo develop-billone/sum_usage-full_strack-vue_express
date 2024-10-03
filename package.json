@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "client": "yarn --cwd frontend dev",
+    "client": "yarn --cwd client dev",
     "dev": "concurrently \"npm run start\" \"npm run client\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
