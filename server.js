@@ -1,11 +1,11 @@
 import express from "express";
+import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import PQueue from "p-queue";
 import runOracleQuery from "./models/sumActual.js";
 
 const JOB_EXPIRATION_TIME = 7200000; // 3 hour
-
 
 dotenv.config();
 const app = express();
@@ -15,6 +15,7 @@ const jobs = new Map(); // Store job states and results
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "client/dist")));
 
 app.post("/oracle", async (req, res) => {
   const { start_date, end_date, number } = req.body;
@@ -78,7 +79,10 @@ app.delete("/oracle/:jobId", (req, res) => {
   const job = jobs.get(req.params.jobId);
   if (job) {
     if (job.status === "processing") {
-      res.json({ status: "failed", message: "Cannot delete a job that is currently processing" });
+      res.json({
+        status: "failed",
+        message: "Cannot delete a job that is currently processing",
+      });
     } else {
       jobs.delete(req.params.jobId);
       res.json({ status: "success", message: "Job deleted successfully" });
@@ -98,6 +102,10 @@ app.get("/oracle/:id"),
       res.status(404).json({ error: "Job not found" });
     }
   };
+  
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/dist", "index.html"));
+});
 
 app.listen(port, async () => {
   console.log(`Server running at http://localhost:${port}`);
